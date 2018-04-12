@@ -1,4 +1,3 @@
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -11,13 +10,12 @@ import java.util.ArrayList;
 @WebServlet(name = "ItemServlet", urlPatterns = "/items")
 public class Items extends HttpServlet {
     public void doGet(HttpServletRequest request,
-                      HttpServletResponse response)
-            throws ServletException, IOException {
+                      HttpServletResponse response) throws IOException {
 
         HttpSession session = request.getSession();
-        ArrayList previousItems = (ArrayList) session.getAttribute("previousItems");
+        ArrayList<String> previousItems = (ArrayList<String>) session.getAttribute("previousItems");
         if (previousItems == null) {
-            previousItems = new ArrayList();
+            previousItems = new ArrayList<>();
             session.setAttribute("previousItems", previousItems);
         }
 
@@ -27,35 +25,31 @@ public class Items extends HttpServlet {
         PrintWriter out = response.getWriter();
         String title = "Items Purchased";
         String docType =
-                "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 " +
-                        "Transitional//EN\">\n";
-        out.println(docType +
-                "<HTML>\n" +
-                "<HEAD><TITLE>" + title + "</TITLE></HEAD>\n" +
-                "<BODY BGCOLOR=\"#FDF5E6\">\n" +
-                "<H1>" + title + "</H1>");
-
+                "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">\n";
+        out.println(String.format("%s<html>\n<head><title>%s</title></head>\n<body bgcolor=\"#FDF5E6\">\n<h1>%s</h1>", docType, title, title));
 
         synchronized (previousItems) {
             if (newItem != null) {
                 previousItems.add(newItem);
             }
             if (previousItems.size() == 0) {
-                out.println("<I>No items</I>");
+                out.println("<i>No items</i>");
             } else {
-                out.println("<UL>");
-                for (int i = 0; i < previousItems.size(); i++) {
-                    out.println("<LI>" + (String) previousItems.get(i));
+                out.println("<ul>");
+                for (Object previousItem : previousItems) {
+                    out.println("<li>" + previousItem);
                 }
-                out.println("</UL>");
+                out.println("</ul>");
             }
         }
+
+
 
         // The following two statements show how this thread can access an
         // object created by a thread of the Session servlet
         // Integer accessCount = (Integer)session.getAttribute("accessCount");
         // out.println("<p>accessCount = " + accessCount);
 
-        out.println("</BODY></HTML>");
+        out.println("</body></html>");
     }
 }

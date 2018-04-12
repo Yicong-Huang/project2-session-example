@@ -1,4 +1,3 @@
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -12,57 +11,62 @@ import java.util.Date;
 public class Session extends HttpServlet {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         String title = "Session Tracking Example";
         HttpSession session = request.getSession(true);
         String heading;
-
         Integer accessCount = (Integer) session.getAttribute("accessCount");
 
         if (accessCount == null) {
-            accessCount = new Integer(0);
-            heading = "Welcome, Newcomer";
+            accessCount = 0;
+            heading = "Welcome, New-Comer";
         } else {
             heading = "Welcome Back";
-            accessCount = new Integer(accessCount.intValue() + 1);
+            accessCount++;
         }
 
-
         session.setAttribute("accessCount", accessCount);
-        out.println("<BODY BGCOLOR=\"#FDF5E6\">\n" +
-                "<H1 ALIGN=\"CENTER\">" + heading + "</H1>\n" +
-                "<H2>Information on Your Session:</H2>\n" +
-                "<TABLE BORDER=1 ALIGN=\"CENTER\">\n" +
-                "<TR BGCOLOR=\"#FFAD00\">\n" +
-                "  <TH>Info Type<TH>Value\n" +
-                "<TR>\n" +
-                "  <TD>ID\n" +
-                "  <TD>" + session.getId() + "\n" +
-                "<TR>\n" +
-                "  <TD>Creation Time\n" +
-                "  <TD>" +
+        out.println("<html><head><title>" + title + "</title></head>\n" +  // create title of the page
+
+                "<body bgcolor=\"#FDF5E6\">\n" +
+                "<h1 ALIGN=\"center\">" + heading + "</h1>\n" +  // set the greeting heading generated before
+                "<h2>Information on Your Session:</H2>\n" +
+                // create a <table>
+                "<table border=1 align=\"center\">\n" +
+                "  <tr bgcolor=\"#FFAD00\">\n" +  // create a <tr> (table row)
+                "    <th>Info Type<th>Value\n" +  // create two <th>s (table header)
+
+                // create a <tr> (table row)
+                "  <tr>\n" +
+                "    <td>ID\n" +  // create the first <td> (table data) in <tr>, which corresponding to the first column
+                "    <td>" + session.getId() + "\n" + // create the second <td> (table data) in <tr>, which corresponding to the second column
+
+                // repeat for more table rows and datas.
+                "  <tr>\n" +
+                "    <td>Creation Time\n" +
+                "    <td>" +
                 new Date(session.getCreationTime()) + "\n" +
-                "<TR>\n" +
-                "  <TD>Time of Last Access\n" +
-                "  <TD>" +
+                "  <tr>\n" +
+                "    <td>Time of Last Access\n" +
+                "    <td>" +
                 new Date(session.getLastAccessedTime()) + "\n" +
-                "<TR>\n" +
-                "  <TD>Number of Previous Accesses\n" +
-                "  <TD>" + accessCount + "\n" +
-                "</TR>" +
-                "</TABLE>\n");
+                "  <tr>\n" +
+                "    <td>Number of Previous Accesses\n" +
+                "    <td>" + accessCount + "\n" +
+                "  </tr>" +
+                "</table>\n");
 
         // the following two statements show how to retrieve parameters in
         // the request.  The URL format is something like:
-        //http://localhost:8080/project2/servlet/ShowSession?myname=Chen%20Li
+        //http://localhost:8080/project2-session-example/Session?myname=Chen%20Li
         String myname = request.getParameter("myname");
         if (myname != null)
             out.println("Hey " + myname + "<br><br>");
 
-        out.println("</BODY></HTML>");
+        out.println("</body></html>");
     }
 
     /**
@@ -70,7 +74,7 @@ public class Session extends HttpServlet {
      */
     public void doPost(HttpServletRequest request,
                        HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
         doGet(request, response);
     }
 }
