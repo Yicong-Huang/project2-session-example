@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 
-//@WebServlet("ShowSession")
-public class ShowSession extends HttpServlet {
+@WebServlet(name = "SessionServlet", urlPatterns = "/session")
+public class Session extends HttpServlet {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
             throws ServletException, IOException {
