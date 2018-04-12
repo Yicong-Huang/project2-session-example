@@ -7,19 +7,24 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+// Declaring a WebServlet called ItemServlet, which maps to url "/items"
 @WebServlet(name = "ItemServlet", urlPatterns = "/items")
+
 public class Items extends HttpServlet {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws IOException {
 
-        HttpSession session = request.getSession();
-        ArrayList<String> previousItems = (ArrayList<String>) session.getAttribute("previousItems");
+        HttpSession session = request.getSession(); // Get a instance of current session on the request
+        ArrayList<String> previousItems = (ArrayList<String>) session.getAttribute("previousItems"); // Retrieve data named "previousItems" from session
+
+        // If "previousItems" is not found on session, means this is a new user, thus we create a new previousItems ArrayList for the user
         if (previousItems == null) {
             previousItems = new ArrayList<>();
-            session.setAttribute("previousItems", previousItems);
+            session.setAttribute("previousItems", previousItems); // Add the newly created ArrayList to session, so that it could be retrieved next time
+
         }
 
-        String newItem = request.getParameter("newItem");
+        String newItem = request.getParameter("newItem"); // Get parameter that sent by GET request url
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
@@ -28,10 +33,13 @@ public class Items extends HttpServlet {
                 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">\n";
         out.println(String.format("%s<html>\n<head><title>%s</title></head>\n<body bgcolor=\"#FDF5E6\">\n<h1>%s</h1>", docType, title, title));
 
+        // Inorder to prevent multiple clients, requests from altering previousItems ArrayList at the same time, we lock the ArrayList while updating
         synchronized (previousItems) {
             if (newItem != null) {
-                previousItems.add(newItem);
+                previousItems.add(newItem); // Add the new item to the previousItems ArrayList
             }
+
+            // Display the current previousItems ArrayList
             if (previousItems.size() == 0) {
                 out.println("<i>No items</i>");
             } else {
@@ -42,13 +50,6 @@ public class Items extends HttpServlet {
                 out.println("</ul>");
             }
         }
-
-
-
-        // The following two statements show how this thread can access an
-        // object created by a thread of the Session servlet
-        // Integer accessCount = (Integer)session.getAttribute("accessCount");
-        // out.println("<p>accessCount = " + accessCount);
 
         out.println("</body></html>");
     }
